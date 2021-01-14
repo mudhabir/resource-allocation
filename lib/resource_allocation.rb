@@ -37,13 +37,10 @@ class ResourceAllocation
 
   def initialize
     @unit_cpu_price = price_per_cpu
-    p 'Enter usage hours:'
-    hours = gets.to_i
-    p 'Enter the minimum number of CPUs needed:'
-    cpus = gets.to_i
-    p 'Enter the maximum price:'
-    price = gets.to_f
-    p get_costs(hours, cpus, price)
+    p 'Enter usage hours, minimum CPU needed and maximum price'
+    hours, cpus, price = gets.chomp.split(' ')
+    ans = get_costs(hours.to_i, cpus.to_i, price.to_f)
+    p ans
   end
 
   def price_per_cpu
@@ -63,7 +60,7 @@ class ResourceAllocation
     if price == 0 # if price is not a constraint
       cpu_based(region_wise_data, hours, cpus)
     elsif cpus == 0 # if CPU is not a constraint
-      cost_based_data(region_wise_data, hours, price)
+      cost_based(region_wise_data, hours, price)
     else
       # allocate CPUs within given price, check if allocation possible, else return
       alloc_possible = cpu_and_cost_based(region_wise_data, hours, cpus, price)
