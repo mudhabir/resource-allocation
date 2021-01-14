@@ -34,6 +34,7 @@ class ResourceAllocation
       '8xlarge'=> 1.18
     }
   }
+
   def initialize
     @unit_cpu_price = price_per_cpu
     p 'Enter usage hours:'
@@ -47,7 +48,7 @@ class ResourceAllocation
 
   def price_per_cpu
     unit_cpu_price = []
-    # Calculate the cost for 1 CPU for each of the instance. This will help in fetching servers with minimum cost
+    # Get the instances with lowest per CPU price. This will help in fetching servers with minimum cost
     RESOURCES.each do |region, instances|
       CPU_SIZE.each do |size|
         unit_cpu_price << ["#{region}-#{size}", RESOURCES[region][size] / CPU_COUNT[size]] if RESOURCES[region][size]
@@ -66,7 +67,7 @@ class ResourceAllocation
     else
       # allocate CPUs within given price, check if allocation possible, else return
       alloc_possible = cpu_and_cost_based(region_wise_data, hours, cpus, price)
-      return 'cannot assign servers at this price' unless alloc_possible
+      return 'cannot assign servers at this price'unless alloc_possible
     end
     region_wise_data.each do |region, data|
       data['region'] = region
@@ -75,7 +76,8 @@ class ResourceAllocation
     result
   end
 
-  def cpu_based(region_wise_data, hours, price)
+  def cpu_based(region_wise_data, hours, cpus)
+    # Assign instances with lowest per CPU prices first till the required CPU is assigned
     @unit_cpu_price.each do |resource|
       region, instance = resource[0].split('-')
       cost_per_server = RESOURCES[region.to_sym][instance] * hours
@@ -89,6 +91,7 @@ class ResourceAllocation
   end
 
   def cost_based(region_wise_data, hours, price)
+    # Assign instances with lowest per CPU prices first till the cost is less than price
     @unit_cpu_price.each do |resource|
       region, instance = resource[0].split('-')
       cost_per_server = RESOURCES[region.to_sym][instance] * hours
@@ -102,6 +105,7 @@ class ResourceAllocation
   end
 
   def cpu_and_cost_based(region_wise_data, hours, cpus, price)
+    # Check for number of instances required followed by whether that many instances can be bought under required price
     @unit_cpu_price.each do |resource|
       region, instance = resource[0].split('-')
       cost_per_server = RESOURCES[region.to_sym][instance] * hours
