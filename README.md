@@ -26,3 +26,11 @@ Output:
 [{"total_cost"=>2.36, "servers"=>[["8xlarge", 1]], "region"=>"asia"}, {"total_cost"=>0.826, "servers"=>[["2xlarge", 1]], "region"=>"us_west"}]
 
 For the above, price is passed as 0 and hence we can allocate the required number of CPUs at any price without any constraint.
+
+To run the program, go to the path where allocation is cloned and use the below command:
+
+ruby lib/resource_allocation.rb
+
+To run the test cases, use the below command:
+
+rspec lib/resource_allocation_test.rb
